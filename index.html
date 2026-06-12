@@ -61,30 +61,91 @@
       <div class="form-copy">
         <p class="section-kicker">留言給我</p>
         <h2 id="form-title">你覺得 buy0050.com 可以做什麼？</h2>
-        <p>留下你的想法，我會寄到 <a href="mailto:hi@buy0050.com">hi@buy0050.com</a> 收信。</p>
+        <p>留下你的想法，我會寄到 <a href="mailto:hi@buy0050.com">hi@buy0050.com</a> 收信。每位訪客 1 小時只能送出一次。</p>
       </div>
 
-      <form id="suggestion-form" class="suggestion-form" action="https://formsubmit.co/hi@buy0050.com" method="POST">
-        <input type="hidden" name="_subject" value="buy0050.com 新留言" />
-        <input type="hidden" name="_template" value="table" />
-        <input type="hidden" name="_captcha" value="false" />
-        <input type="hidden" name="_next" value="https://buy0050.com/thanks.html" />
+      <form id="suggestion-form" class="suggestion-form" action="contact.php" method="POST" novalidate>
         <label>
           你的名字／暱稱
-          <input type="text" name="name" placeholder="例如：Brian、路過的朋友" required />
+          <input type="text" name="name" placeholder="例如：Brian、路過的朋友" maxlength="80" required />
         </label>
         <label>
           Email（選填，方便我回覆）
-          <input type="email" name="email" placeholder="you@example.com" />
+          <input type="email" name="email" placeholder="you@example.com" maxlength="160" />
         </label>
         <label>
           你的建議
-          <textarea name="message" rows="7" placeholder="我覺得 buy0050.com 可以做成……" required></textarea>
+          <textarea name="message" rows="7" placeholder="我覺得 buy0050.com 可以做成……" maxlength="3000" required></textarea>
         </label>
-        <button type="submit">送出建議</button>
+        <label class="hp-field" aria-hidden="true">
+          Website
+          <input type="text" name="website" tabindex="-1" autocomplete="off" />
+        </label>
+        <button id="submit-button" type="submit">送出建議</button>
+        <p id="form-status" class="form-status" role="status" aria-live="polite"></p>
         <p class="form-note">若表單無法送出，也可以直接寄到 <a href="mailto:hi@buy0050.com?subject=給 buy0050.com 的網站建議">hi@buy0050.com</a>。</p>
       </form>
     </section>
   </main>
+
+  <script>
+    const form = document.querySelector('#suggestion-form');
+    const statusEl = document.querySelector('#form-status');
+    const submitButton = document.querySelector('#submit-button');
+    const rateLimitKey = 'buy0050-last-submit-at';
+    const oneHour = 60 * 60 * 1000;
+
+    function setStatus(message, type) {
+      statusEl.textContent = message;
+      statusEl.className = 'form-status ' + type;
+    }
+
+    function getRemainingMinutes() {
+      const lastSubmitAt = Number(localStorage.getItem(rateLimitKey) || 0);
+      const remaining = oneHour - (Date.now() - lastSubmitAt);
+      return remaining > 0 ? Math.ceil(remaining / 60000) : 0;
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const remainingMinutes = getRemainingMinutes();
+      if (remainingMinutes > 0) {
+        setStatus('你已經送出過留言，請約 ' + remainingMinutes + ' 分鐘後再試。', 'error');
+        return;
+      }
+
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      submitButton.disabled = true;
+      submitButton.textContent = '送出中…';
+      setStatus('', '');
+
+      try {
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { 'Accept': 'application/json' }
+        });
+        const result = await response.json().catch(() => ({}));
+
+        if (!response.ok || result.ok === false) {
+          throw new Error(result.message || '目前無法送出，請稍後再試。');
+        }
+
+        localStorage.setItem(rateLimitKey, String(Date.now()));
+        form.reset();
+        setStatus(result.message || '謝謝你的來信', 'success');
+      } catch (error) {
+        setStatus(error.message || '目前無法送出，請稍後再試。', 'error');
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = '送出建議';
+      }
+    });
+  </script>
 </body>
 </html>

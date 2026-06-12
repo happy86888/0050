@@ -1,17 +1,18 @@
-buy0050.com website package
+buy0050.com 網站上傳說明
 
-包含檔案：
+這版已經移除 FormSubmit，改成自己的 contact.php 收信端。
+
+檔案：
 - index.html：首頁與留言表單
-- thanks.html：留言送出後的感謝頁
-- styles.css：網站樣式
+- styles.css：樣式
+- contact.php：寄信與 1 小時限制
+- thanks.html：備用感謝頁
 
-上線方式：
-1. 將這三個檔案上傳到 buy0050.com 的網站根目錄。
-2. 表單目前使用 FormSubmit，留言會送到 hi@buy0050.com。
-3. 第一次有人送出表單時，FormSubmit 通常會寄一封啟用確認信到 hi@buy0050.com。請點擊確認後，後續留言才會正常轉寄。
-4. 若你不用 FormSubmit，可以把表單 action 改成自己的後端 API，或改成 mailto:hi@buy0050.com。
+上傳方式：
+1. 把整包檔案上傳到 buy0050.com 的網站根目錄。
+2. 主機必須支援 PHP，且 mail() 必須可正常寄信。
+3. 表單成功送出後，頁面會直接顯示「謝謝你的來信」。
+4. 每個 IP 1 小時只能送出一次；前端 localStorage 會先擋一次，後端 contact.php 也會再擋一次。
 
-注意：
-- 這是靜態網站，不需要資料庫。
-- 若未設定後端或第三方表單服務，瀏覽器本身不能直接寄信。
-- 網站文案已包含「非官方網站、非投資建議」提醒。
+重要：
+如果主機沒有啟用 PHP mail()，表單會顯示「目前主機無法寄信」。這不是網站前端問題，而是主機寄信設定問題。若要提高收信穩定度，建議改成 SMTP、Cloudflare Worker + Resend、或主機商提供的 SMTP。

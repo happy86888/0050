@@ -49,7 +49,7 @@ export default function CommentForm({ type }: CommentFormProps) {
       formRef.current.reset();
       setStatus(result.message || "謝謝你的來信");
     } catch {
-      setStatus("送出失敗，請稍後再試，或直接寄信到 hi@buy0050.com。");
+      setStatus("送出失敗，請稍後再試，或聯絡管理員 hi@buy0050.com。");
     } finally {
       setBusy(false);
     }

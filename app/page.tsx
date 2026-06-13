@@ -41,7 +41,7 @@ export default async function HomePage() {
           <a className="button primary" href="#idea-form">留下建議</a>
           <a className="button secondary" href="#statement-form">貼對帳單</a>
           <a className="button secondary" href="#wall">看留言牆</a>
-          <a className="button secondary" href="mailto:hi@buy0050.com?subject=給 buy0050.com 的網站建議">直接寄信</a>
+          <a className="button secondary" href="mailto:hi@buy0050.com?subject=給 buy0050.com 的網站建議">聯絡管理員</a>
         </div>
       </section>
 
@@ -120,7 +120,7 @@ export default async function HomePage() {
         <div className="form-copy">
           <p className="section-kicker">留言給我</p>
           <h2 id="form-title">你覺得 buy0050.com 可以做什麼？</h2>
-          <p>留下你的想法。送出後會先進審核；批准後會出現在留言牆。也可以直接寄到 <a href="mailto:hi@buy0050.com">hi@buy0050.com</a>。</p>
+          <p>留下你的想法。送出後會先進審核；批准後會出現在留言牆。也可以聯絡管理員：<a href="mailto:hi@buy0050.com">hi@buy0050.com</a>。</p>
         </div>
         <CommentForm type="idea" />
       </section>
